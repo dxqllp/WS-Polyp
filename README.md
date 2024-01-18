@@ -1,5 +1,5 @@
-#  Joint Edge-aware and Global context for polyp segmentation with cross-layer mapping
-
+#  Point-level weakly semi-supervised for polyp segmentation with boundary
+constraint
 
 ##  Requirements
 
