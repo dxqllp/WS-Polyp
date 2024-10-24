@@ -112,14 +112,14 @@ class DETR(nn.Module):
         out = {}
 
         bbox_mask = self.bbox_attention(hs[-1], src, mask=mask)
-        seg_masks,pr0,pr1,pr2,pr3,edge0,edge1,bbox,x4,gc0 = self.mask_head(gaosi_kernel,self.input_proj(src), bbox_mask, [features[3].tensors, features[2].tensors, features[1].tensors,features[0].tensors])
+        seg_masks,feature5,feature4,feature3,feature2,feature1 = self.mask_head(gaosi_kernel,self.input_proj(src), bbox_mask, [features[3].tensors, features[2].tensors, features[1].tensors,features[0].tensors])
         outputs_seg_masks = seg_masks.view(bs, 1, seg_masks.shape[-2], seg_masks.shape[-1])
 
 
 
 
         #edge0 176*176
-        out["pred_masks"] = [outputs_seg_masks,pr0,pr1,pr2,pr3,edge0,edge1,bbox,x4,gc0]
+        out["pred_masks"] = [outputs_seg_masks,feature5,feature4,feature3,feature2,feature1]
         # edge0 =F.interpolate(edge0,scale_factor=2,mode='bilinear', align_corners=True)
 
         ##对预测进行精修

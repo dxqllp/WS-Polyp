@@ -46,10 +46,10 @@ class edge_Block(nn.Module):
     def forward(self, x,gc):
         x0 = self.branch0(x)
 
-        # x0 =  torch.cat((x0,gc),dim=1)     
-        # x1 = self.branch1(x0)
-        # out =x1 +x
-        out =x0
+        x0 =  torch.cat((x0,gc),dim=1)
+        x1 = self.branch1(x0)
+        out =x1 +x
+
 
         return out
 
@@ -286,10 +286,10 @@ class MaskHeadSmallConv(nn.Module):
         self.sideout4 = SideoutBlock(128, 1)
 
         # Decoder
-        self.decoder0 = DecoderBlock(in_channels=256, out_channels=128)
-        self.decoder1 = DecoderBlock(in_channels=256, out_channels=128)
-        self.decoder2 = DecoderBlock(in_channels=256, out_channels=128)
-        self.decoder3 = DecoderBlock(in_channels=256, out_channels=128)
+        self.decoder0 = DecoderBlock(in_channels=384, out_channels=128)
+        self.decoder1 = DecoderBlock(in_channels=384, out_channels=128)
+        self.decoder2 = DecoderBlock(in_channels=384, out_channels=128)
+        self.decoder3 = DecoderBlock(in_channels=384, out_channels=128)
         self.decoder4 = DecoderBlock(in_channels=128, out_channels=128)
 
         #SEmoudle
@@ -366,21 +366,22 @@ class MaskHeadSmallConv(nn.Module):
         d4 = self.decoder4(x4_rfb)
         pred4 = self.sideout3(d4)
 
-        d3 = self.decoder3(torch.cat((d4,x3_rfb),dim=1))
+        d3 = self.decoder3(torch.cat((d4,self.pool(self.pool(torch.sigmoid(edge1)))*x3_rfb+x3_rfb,gc3),dim=1))
         pred3 = self.sideout2(d3)
 
-        d2 = self.decoder2(torch.cat((d3,x2_rfb),dim=1))
+        d2 = self.decoder2(torch.cat((d3,self.pool(torch.sigmoid(edge1))*x2_rfb+x2_rfb,gc2),dim=1))
         pred2 = self.sideout1(d2)
 
-        d1 =self.decoder1(torch.cat((d2,x1_rfb),dim=1))
+        d1 =self.decoder1(torch.cat((d2,torch.sigmoid(edge1)*x1_rfb+x1_rfb,gc1),dim=1))
         pred1 =self.sideout0(d1)
 
-        d0 = self.decoder0(torch.cat((d1,x0_rfb),dim=1))
+        d0 = self.decoder0(torch.cat((d1,torch.sigmoid(edge0)*x0_rfb+x0_rfb,gc0),dim=1))
         pred0=self.sideout4(d0)
 
 
 
-        return pred0,pred1,pred2,pred3,pred4,edge0,edge1,tem,x4_rfb,gc0
+
+        return pred0,d4,d3,d2,d1,d0
 
 
 class MHAttentionMap(nn.Module):

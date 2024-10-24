@@ -29,7 +29,7 @@ def main(args):
     model.to(device)
 
     model_dict = model.state_dict()
-    load_ckpt_path = os.path.join('./para/cli5permodel.pth')
+    load_ckpt_path = os.path.join('./para/30permodel.pth')
     assert os.path.isfile(load_ckpt_path), 'No checkpoint found.'
     print('Loading checkpoint......')
     checkpoint = torch.load(load_ckpt_path)
@@ -45,7 +45,7 @@ def main(args):
                                  drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers)
 
 
-    metrics_result = valid(model, data_loader_val, len(dataset_val),args,'test','cli5per')
+    metrics_result = valid(model, data_loader_val, len(dataset_val),args,'test','30per')
     print("Valid Result:")
     print('recall: %.4f, specificity: %.4f, precision: %.4f, F1: %.4f,'
               ' F2: %.4f, ACC_overall: %.4f, IoU_poly: %.4f, IoU_bg: %.4f, IoU_mean: %.4f'
